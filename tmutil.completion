@@ -1,0 +1,24 @@
+#!/usr/bin/env bash 
+
+# originally from https://gist.github.com/takuya/73d7fe2737536feb028b
+
+_tmutil(){
+    
+    list=$( tmutil | /usr/bin/grep -v ^$ | /usr/bin/grep ^Usage | awk '{print $3}' )
+
+    # add undocumented options
+    list=$( printf "%s\\nstatus\\n" "$list" )
+    
+    case $COMP_CWORD in
+        1)
+	    mapfile -t COMPREPLY < <( compgen -W "$list" "${COMP_WORDS[COMP_CWORD]}" )
+            ;;
+        *)
+            COMPREPLY=()
+            # http://stackoverflow.com/questions/12933362/getting-compgen-to-include-slashes-on-directories-when-looking-for-files
+        ;;
+    esac
+    
+}
+
+complete -o default -F _tmutil tmutil
